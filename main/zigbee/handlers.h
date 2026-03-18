@@ -18,6 +18,7 @@ class ZigbeeHandlers {
         ZigbeeHandlers(std::list<ZigbeeDevice *>* list);
         ~ZigbeeHandlers();
         esp_err_t handle(esp_zb_core_action_callback_id_t callback_id, const void *message);
+        void handle(const zb_zcl_parsed_hdr_t* cmdInfo, const void* data);
     private:
         const char *TAG = "TC-ZBH";
         const esp_partition_t *s_ota_partition = NULL;
@@ -32,4 +33,5 @@ class ZigbeeHandlers {
         esp_err_t attributeUpdate(const esp_zb_zcl_set_attr_value_message_t *message);
         esp_err_t attributeResponse(const esp_zb_zcl_cmd_read_attr_resp_message_t *message);
         esp_err_t reporting(const esp_zb_zcl_report_attr_message_t *message);
+        esp_err_t customCommand(const esp_zb_zcl_custom_cluster_command_message_t* message);
 };

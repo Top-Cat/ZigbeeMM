@@ -99,7 +99,7 @@ void handleLight() {
         ESP_LOGD(TAG, "Light value: %.2f, Smoothed: %.2f\n", luxLocal, lux);
 
         checkLux();
-        zbOccupancySensor.setIlluminance(lux);
+        zbOccupancySensor.setIlluminance(lux * 10);
     }
 }
 

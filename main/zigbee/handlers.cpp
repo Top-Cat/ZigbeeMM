@@ -27,6 +27,9 @@ esp_err_t ZigbeeHandlers::handle(esp_zb_core_action_callback_id_t callback_id, c
     case ESP_ZB_CORE_OTA_UPGRADE_QUERY_IMAGE_RESP_CB_ID:
         ret = queryImageResponse((esp_zb_zcl_ota_upgrade_query_image_resp_message_t*) message);
         break;
+    case ESP_ZB_CORE_CMD_CUSTOM_CLUSTER_REQ_CB_ID:
+        ret = customCommand((esp_zb_zcl_custom_cluster_command_message_t*) message);
+        break;
     case ESP_ZB_CORE_CMD_DEFAULT_RESP_CB_ID:
         // Gateway responding to our reports
         break;
@@ -86,6 +89,37 @@ esp_err_t ZigbeeHandlers::attributeUpdate(const esp_zb_zcl_set_attr_value_messag
     for (std::list<ZigbeeDevice *>::iterator it = ep_objects->begin(); it != ep_objects->end(); ++it) {
         if (message->info.dst_endpoint == (*it)->_endpoint) {
             (*it)->zbAttributeSet(message);
+        }
+    }
+
+    return ret;
+}
+
+void ZigbeeHandlers::handle(const zb_zcl_parsed_hdr_t* cmdInfo, const void* data) {
+    if (cmdInfo->cmd_direction != 0) return;
+
+    ESP_LOGV(TAG,
+        "Receive Zigbee command endpoint=%d, cluster=%d, cmd=%d, dir=%d",
+        cmdInfo->addr_data.common_data.dst_endpoint, cmdInfo->cluster_id, cmdInfo->cmd_id, cmdInfo->cmd_direction
+    );
+
+    for (std::list<ZigbeeDevice *>::iterator it = ep_objects->begin(); it != ep_objects->end(); ++it) {
+        if (cmdInfo->addr_data.common_data.dst_endpoint == (*it)->_endpoint) {
+            (*it)->zbCommand(cmdInfo, data);
+        }
+    }
+}
+
+esp_err_t ZigbeeHandlers::customCommand(const esp_zb_zcl_custom_cluster_command_message_t* message) {
+    esp_err_t ret = ESP_OK;
+
+    ESP_RETURN_ON_FALSE(message, ESP_FAIL, TAG, "Empty message");
+    ESP_RETURN_ON_FALSE(message->info.status == ESP_ZB_ZCL_STATUS_SUCCESS, ESP_ERR_INVALID_ARG, TAG, "Received command: error status(%d)", message->info.status);
+    ESP_LOGI(TAG, "Receive custom command: %d from address 0x%04hx", message->info.command.id, message->info.src_address.u.short_addr);
+
+    for (std::list<ZigbeeDevice *>::iterator it = ep_objects->begin(); it != ep_objects->end(); ++it) {
+        if (message->info.dst_endpoint == (*it)->_endpoint) {
+            (*it)->zbCustomCommand(message);
         }
     }
 

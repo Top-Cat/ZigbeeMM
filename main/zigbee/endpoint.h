@@ -7,6 +7,11 @@
 #include "zcl/esp_zigbee_zcl_common.h"
 #include "zcl/esp_zigbee_zcl_core.h"
 
+extern "C" {
+    #include "zboss_api.h"
+    extern zb_ret_t zb_nvram_write_dataset(zb_nvram_dataset_types_t t);
+}
+
 #define ZB_CMD_TIMEOUT 10000
 #define ZB_ARRAY_LENGTH(arr) (sizeof(arr) / sizeof(arr[0]))
 
@@ -48,10 +53,14 @@ class ZigbeeDevice {
         struct tm getTime(uint8_t endpoint = 1, int32_t short_addr = 0x0000, esp_zb_ieee_addr_t ieee_addr = {0});
         int32_t getTimezone(uint8_t endpoint = 1, int32_t short_addr = 0x0000, esp_zb_ieee_addr_t ieee_addr = {0});
 
+        virtual void identifyCommand(uint8_t state) {};
+
         virtual esp_zb_cluster_list_t* createClusters() {
             return NULL;
         }
         virtual void zbAttributeSet(const esp_zb_zcl_set_attr_value_message_t *message) {}
+        virtual void zbCustomCommand(const esp_zb_zcl_custom_cluster_command_message_t *message) {}
+        virtual void zbCommand(const zb_zcl_parsed_hdr_t* cmdInfo, const void* data) {}
         virtual void zbAttributeRead(uint16_t cluster_id, const esp_zb_zcl_attribute_t *attribute, uint8_t src_endpoint, esp_zb_zcl_addr_t src_address) {}
 
         std::list<zb_device_params_t *> _bound_devices;

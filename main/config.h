@@ -24,12 +24,11 @@
 #define WS2812_MAX 500
 
 #define BUTTON_PIN  GPIO_NUM_9
-#define SWITCH_PIN  GPIO_NUM_20
-#define SENSOR_PIN  GPIO_NUM_18
 #define LEDA_PIN    GPIO_NUM_23
 #define LEDB_PIN    GPIO_NUM_22
-#define LEDC_PIN    GPIO_NUM_21
-#define WS2812_PIN  GPIO_NUM_1
-#define TEMP_PIN    GPIO_NUM_2
-#define SCL_PIN     GPIO_NUM_4
-#define SDA_PIN     GPIO_NUM_5
+#define TEMP_PIN    GPIO_NUM_1
+#define SCL_PIN     GPIO_NUM_2
+#define SDA_PIN     GPIO_NUM_3
+#define MM_RX     GPIO_NUM_4
+#define MM_TX     GPIO_NUM_5
+#define MM_OUT    GPIO_NUM_21

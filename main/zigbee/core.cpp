@@ -1,13 +1,7 @@
 #include "nvs_flash.h"
-#include "esp_zigbee_core.h"
 #include "esp_log.h"
 
 #include "core.h"
-
-extern "C" {
-    #include "zboss_api.h"
-    extern zb_ret_t zb_nvram_write_dataset(zb_nvram_dataset_types_t t);
-}
 
 const char* ZigbeeCore::TAG = "TC-ZC";
 ZigbeeCore zigbeeCore;
@@ -21,6 +15,15 @@ static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id,
     return zigbeeCore.handle(callback_id, message);
 }
 
+static bool zb_command_handler(uint8_t bufid) {
+    uint8_t buf[zb_buf_len(bufid)];
+    zb_zcl_parsed_hdr_t *parsed = ZB_BUF_GET_PARAM(bufid, zb_zcl_parsed_hdr_t);
+    memcpy(buf, zb_buf_begin(bufid), sizeof(buf));
+
+    zigbeeCore.handle(parsed, &buf);
+    return false;
+}
+
 ZigbeeCore::ZigbeeCore() {
     handlers = new ZigbeeHandlers(&ep_objects);
     _primary_channel_mask = ESP_ZB_TRANSCEIVER_ALL_CHANNELS_MASK;
@@ -29,6 +32,10 @@ ZigbeeCore::ZigbeeCore() {
 
 esp_err_t ZigbeeCore::handle(esp_zb_core_action_callback_id_t callback_id, const void *message) {
     return handlers->handle(callback_id, message);
+}
+
+void ZigbeeCore::handle(const zb_zcl_parsed_hdr_t* cmdInfo, const void* data) {
+    return handlers->handle(cmdInfo, data);
 }
 
 const char *APSDE_TAG = "APSDE";
@@ -87,6 +94,7 @@ void ZigbeeCore::start() {
 
     ESP_ERROR_CHECK(esp_zb_device_register(_zb_ep_list));
     esp_zb_core_action_handler_register(zb_action_handler);
+    esp_zb_raw_command_handler_register(zb_command_handler);
     ESP_ERROR_CHECK(esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK));
     esp_zb_aps_data_indication_handler_register(zb_apsde_data_indication_handler);
 
