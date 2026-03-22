@@ -12,7 +12,6 @@ uint8_t sensorCount = 0;
 
 float threshold = 0;
 float lux = 0;
-bool inhibit = false;
 
 tsl2591_t light;
 bool lightFound = false;
@@ -81,14 +80,6 @@ void setupLight() {
     }
 }
 
-void checkLux() {
-    if (!inhibit && lux > threshold) {
-        inhibit = true;
-    } else if (inhibit && lux < threshold - LUX_HYSTERESIS) {
-        inhibit = false;
-    }
-}
-
 void handleLight() {
     if (!lightFound) return;
 
@@ -98,18 +89,8 @@ void handleLight() {
         lux = (lux * (LUX_SAMPLES - 1) + luxLocal) / LUX_SAMPLES;
         ESP_LOGD(TAG, "Light value: %.2f, Smoothed: %.2f\n", luxLocal, lux);
 
-        checkLux();
         zbOccupancySensor.setIlluminance(lux * 10);
     }
-}
-
-bool getInhibit() {
-    return inhibit;
-}
-
-void setInhibit(float _threshold) {
-    threshold = _threshold;
-    checkLux();
 }
 
 void sensor_task(void *pvParameters) {
