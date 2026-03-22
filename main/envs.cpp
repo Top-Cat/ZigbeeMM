@@ -81,6 +81,7 @@ void setupLight() {
 }
 
 void handleLight() {
+    if (!lightFound) setupLight();
     if (!lightFound) return;
 
     float luxLocal;
