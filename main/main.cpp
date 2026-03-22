@@ -40,6 +40,7 @@ void setOccupied(bool newVal) {
     gpio_set_level(LEDA_PIN, newVal);
 
     zbOccupancySensor.setOccupancy(occupancy_state);
+    zbOccupancySensor.report();
 }
 
 void mmData(LD2412Data data) {

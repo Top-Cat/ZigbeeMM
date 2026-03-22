@@ -29,6 +29,7 @@ class ZigbeeSensor : public ZigbeeDevice {
 
         void onConnect();
         void requestOTA();
+        bool report();
     private:
         const char* TAG = "TC-ZBS";
         const char* manufacturer_name = "TC";

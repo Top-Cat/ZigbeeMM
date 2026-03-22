@@ -390,3 +390,29 @@ bool ZigbeeSensor::setIlluminance(float illuminance) {
     }
     return true;
 }
+
+esp_err_t doReport(uint8_t _endpoint, esp_zb_zcl_cluster_id_t cluster, uint16_t attr) {
+    // Must already have zb lock
+    esp_zb_zcl_report_attr_cmd_t report_attr_cmd = {
+        {
+            .dst_addr_u = {},
+            .dst_endpoint = 0,
+            .src_endpoint = _endpoint
+        },
+        ESP_ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT,
+        cluster,
+        {0, ESP_ZB_ZCL_CMD_DIRECTION_TO_CLI, 0},
+        ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC,
+        attr
+    };
+
+    return esp_zb_zcl_report_attr_cmd_req(&report_attr_cmd);
+}
+
+bool ZigbeeSensor::report() {
+    esp_zb_lock_acquire(portMAX_DELAY);
+    esp_err_t ret = doReport(_endpoint, ESP_ZB_ZCL_CLUSTER_ID_OCCUPANCY_SENSING, ESP_ZB_ZCL_ATTR_OCCUPANCY_SENSING_OCCUPANCY_ID);
+    esp_zb_lock_release();
+
+    return ret == ESP_OK;
+}
