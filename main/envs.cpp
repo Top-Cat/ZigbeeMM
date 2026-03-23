@@ -91,7 +91,7 @@ void handleLight() {
     tsl2591_get_channel_data(&light, &channel0, &channel1);
 
     if (channel0 < channel1 || channel0 == 0) {
-        luxLocal = 1;
+        luxLocal = 0.1f;
         res = ESP_OK;
     } else {
         res = tsl2591_calculate_lux(&light, channel0, channel1, &luxLocal);
