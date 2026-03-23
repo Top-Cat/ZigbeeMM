@@ -95,7 +95,7 @@ void ZigbeeSensor::createCustomClusters(esp_zb_cluster_list_t* cluster_list) {
             MS_MMW_CLUSTER_ID,
             atid,
             MANUFACTURER_CODE,
-            ESP_ZB_ZCL_ATTR_TYPE_U8,
+            ESP_ZB_ZCL_ATTR_TYPE_U16,
             ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
             &val
         );
