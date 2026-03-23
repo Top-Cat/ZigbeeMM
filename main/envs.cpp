@@ -75,7 +75,7 @@ void setupLight() {
 
         ESP_ERROR_CHECK(tsl2591_set_power_status(&light, TSL2591_POWER_ON));
         ESP_ERROR_CHECK(tsl2591_set_als_status(&light, TSL2591_ALS_ON));
-        ESP_ERROR_CHECK(tsl2591_set_gain(&light, TSL2591_GAIN_MEDIUM));
+        ESP_ERROR_CHECK(tsl2591_set_gain(&light, TSL2591_GAIN_HIGH));
         ESP_ERROR_CHECK(tsl2591_set_integration_time(&light, TSL2591_INTEGRATION_300MS));
     }
 }
