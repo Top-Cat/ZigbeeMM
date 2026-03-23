@@ -12,7 +12,13 @@ export default {
             manufacturerCode: 0x1234,
             ID: 0xFC10,
             attributes: {
-                'bluetooth': { ID: 0x0001, type: Zcl.DataType.BOOLEAN, write: true }
+                'bluetooth': { ID: 0x0001, type: Zcl.DataType.BOOLEAN, write: true },
+                'debug1': { ID: 0x00F0, type: Zcl.DataType.UINT16, write: true, max: 0xff },
+                'debug2': { ID: 0x00F1, type: Zcl.DataType.UINT16, write: true, max: 0xff },
+                'debug3': { ID: 0x00F2, type: Zcl.DataType.UINT16, write: true, max: 0xff },
+                'debug4': { ID: 0x00F3, type: Zcl.DataType.UINT16, write: true, max: 0xff },
+                'debug5': { ID: 0x00F4, type: Zcl.DataType.UINT16, write: true, max: 0xff },
+                'debug6': { ID: 0x00F5, type: Zcl.DataType.UINT16, write: true, max: 0xff }
             },
             commands: {},
             commandsResponse: {},

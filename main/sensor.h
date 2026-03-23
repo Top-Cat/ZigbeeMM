@@ -23,6 +23,7 @@ class ZigbeeSensor : public ZigbeeDevice {
         bool setOccupancy(bool occupied);
         bool setTemperature(float temperature);
         bool setIlluminance(float illuminance);
+        bool setDebug(const uint8_t i, const uint16_t v);
         void init();
         uint16_t getTimeout();
         uint16_t getManualHoldout();
