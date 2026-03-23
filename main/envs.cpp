@@ -69,7 +69,6 @@ void setupLight() {
 
     ESP_ERROR_CHECK(tsl2591_init_desc(&light, I2C_NUM_0, SDA_PIN, SCL_PIN));
     esp_err_t res = tsl2591_init(&light);
-    zbOccupancySensor.setDebug(0, res);
 
     if (res == ESP_OK) {
         lightFound = true;
@@ -81,26 +80,27 @@ void setupLight() {
     }
 }
 
-uint16_t tick = 0;
 void handleLight() {
     if (!lightFound) return;
 
     float luxLocal;
 
     // Get tsl2591 state
+    esp_err_t res;
     uint16_t channel0, channel1;
     tsl2591_get_channel_data(&light, &channel0, &channel1);
-    zbOccupancySensor.setDebug(3, channel0);
-    zbOccupancySensor.setDebug(4, channel1);
 
-    if (tsl2591_get_lux(&light, &luxLocal) == ESP_OK) {
-        zbOccupancySensor.setDebug(1, luxLocal);
-        zbOccupancySensor.setDebug(5, ++tick);
+    if (channel0 < channel1 || channel0 == 0) {
+        luxLocal = 1;
+        res = ESP_OK;
+    } else {
+        res = tsl2591_calculate_lux(&light, channel0, channel1, &luxLocal);
+    }
 
+    if (res == ESP_OK) {
         lux = (lux * (LUX_SAMPLES - 1) + luxLocal) / LUX_SAMPLES;
         ESP_LOGD(TAG, "Light value: %.2f, Smoothed: %.2f\n", luxLocal, lux);
 
-        zbOccupancySensor.setDebug(2, lux);
         zbOccupancySensor.setIlluminance(lux * 10);
     }
 }

@@ -89,18 +89,6 @@ void ZigbeeSensor::createCustomClusters(esp_zb_cluster_list_t* cluster_list) {
         &val
     );
 
-    for (uint16_t atid = 0xF0; atid < 0xF6; atid++) {
-        esp_zb_cluster_add_manufacturer_attr(
-            mmwave_cluster,
-            MS_MMW_CLUSTER_ID,
-            atid,
-            MANUFACTURER_CODE,
-            ESP_ZB_ZCL_ATTR_TYPE_U16,
-            ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE,
-            &val
-        );
-    }
-
     esp_zb_cluster_list_add_custom_cluster(cluster_list, mmwave_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 }
 
@@ -368,26 +356,6 @@ bool ZigbeeSensor::setTemperature(float temperature) {
 
     if (ret != ESP_ZB_ZCL_STATUS_SUCCESS) {
         ESP_LOGE(TAG, "Failed to set temperature: 0x%x: %s", ret, esp_zb_zcl_status_to_name(ret));
-        return false;
-    }
-    return true;
-}
-
-bool ZigbeeSensor::setDebug(const uint8_t i, const uint16_t v) {
-    esp_zb_lock_acquire(portMAX_DELAY);
-    esp_zb_zcl_status_t ret = esp_zb_zcl_set_manufacturer_attribute_val(
-        _endpoint,
-        MS_MMW_CLUSTER_ID,
-        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
-        MANUFACTURER_CODE,
-        0xF0 + i,
-        (void*) &v,
-        false
-    );
-    esp_zb_lock_release();
-
-    if (ret != ESP_ZB_ZCL_STATUS_SUCCESS) {
-        ESP_LOGE(TAG, "Failed to set debug: 0x%x: %s", ret, esp_zb_zcl_status_to_name(ret));
         return false;
     }
     return true;
