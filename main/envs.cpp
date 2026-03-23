@@ -88,14 +88,14 @@ void handleLight() {
     float luxLocal;
 
     // Get tsl2591 state
-    uint8_t tmp_reg = 0;
-    esp_err_t err = i2c_dev_read_reg(&light.i2c_dev, 0x80 | 0x20 | 0x01, &tmp_reg, 1);
-    zbOccupancySensor.setDebug(3, err);
-    zbOccupancySensor.setDebug(4, tmp_reg);
-    zbOccupancySensor.setDebug(5, ++tick);
+    uint16_t channel0, channel1;
+    tsl2591_get_channel_data(&light, &channel0, &channel1);
+    zbOccupancySensor.setDebug(3, channel0);
+    zbOccupancySensor.setDebug(4, channel1);
 
     if (tsl2591_get_lux(&light, &luxLocal) == ESP_OK) {
         zbOccupancySensor.setDebug(1, luxLocal);
+        zbOccupancySensor.setDebug(5, ++tick);
 
         lux = (lux * (LUX_SAMPLES - 1) + luxLocal) / LUX_SAMPLES;
         ESP_LOGD(TAG, "Light value: %.2f, Smoothed: %.2f\n", luxLocal, lux);
