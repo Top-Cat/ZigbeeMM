@@ -174,6 +174,8 @@ void ZigbeeSensor::zbCommand(const zb_zcl_parsed_hdr_t* cmdInfo, const void* dat
 
         gpio_set_level(LEDB_PIN, 0);
         xQueueSend(identifyQueue, &steps, 0);
+    } else if (cmdInfo->cluster_id == ESP_ZB_ZCL_CLUSTER_ID_BASIC && cmdInfo->cmd_id == ESP_ZB_ZCL_CMD_BASIC_RESET_ID) {
+        esp_zb_factory_reset();
     }
 }
 
