@@ -9,6 +9,7 @@ export default {
     description: 'Custom MMWave Sensor',
     extend: [
         m.deviceAddCustomCluster("tcSpecificMmwave", {
+            name: "tcSpecificMmwave",
             manufacturerCode: 0x1234,
             ID: 0xFC10,
             attributes: {
